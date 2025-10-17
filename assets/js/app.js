@@ -24,6 +24,8 @@ document.querySelectorAll('.nav-link').forEach(link => {
   }
 });
 
+const detailUrl = id => `detail.html?id=${encodeURIComponent(id)}`;
+
 const heroElements = {
   badge: document.getElementById('heroBadge'),
   title: document.getElementById('heroTitle'),
@@ -63,6 +65,19 @@ if (heroConfig) {
   }
   if (heroElements.cta) {
     heroElements.cta.textContent = heroConfig.cta ?? '';
+    if (heroItem) {
+      heroElements.cta.href = detailUrl(heroItem.id);
+      heroElements.cta.removeAttribute('target');
+      heroElements.cta.removeAttribute('rel');
+    } else {
+      heroElements.cta.href = heroConfig.ctaLink ?? '#';
+      if (heroConfig.ctaExternal) {
+        heroElements.cta.target = '_blank';
+        heroElements.cta.rel = 'noopener';
+      } else {
+        heroElements.cta.removeAttribute('target');
+        heroElements.cta.removeAttribute('rel');
+      }
     heroElements.cta.href = heroItem?.trailer ?? '#';
     if (heroItem?.trailer) {
       heroElements.cta.target = '_blank';
@@ -80,6 +95,10 @@ if (heroConfig) {
 }
 
 function createMediaCard(item) {
+  const link = document.createElement('a');
+  link.className = 'media-card';
+  link.href = detailUrl(item.id);
+  link.innerHTML = `
   const card = document.createElement('article');
   card.className = 'media-card';
   card.innerHTML = `
@@ -100,11 +119,26 @@ function createMediaCard(item) {
       </div>
     </div>
   `;
+  return link;
   return card;
 }
 
 function createTopEntry(item) {
   const li = document.createElement('li');
+  const link = document.createElement('a');
+  link.className = 'top-grid__link';
+  link.href = detailUrl(item.id);
+  link.innerHTML = `
+    <img src="${item.backdrop || item.poster}" alt="${item.title}" loading="lazy" />
+    <div class="top-grid__body">
+      <h3 class="top-grid__title">${item.title}</h3>
+      <div class="top-grid__meta">
+        <span>⭐ ${item.rating ? item.rating.toFixed(1) : '–'}</span>
+        <span>${item.year ?? ''}</span>
+      </div>
+    </div>
+  `;
+  li.appendChild(link);
   const img = document.createElement('img');
   img.src = item.backdrop || item.poster;
   img.alt = item.title;
