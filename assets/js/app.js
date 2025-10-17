@@ -78,6 +78,10 @@ if (heroConfig) {
         heroElements.cta.removeAttribute('target');
         heroElements.cta.removeAttribute('rel');
       }
+    heroElements.cta.href = heroItem?.trailer ?? '#';
+    if (heroItem?.trailer) {
+      heroElements.cta.target = '_blank';
+      heroElements.cta.rel = 'noopener';
     }
   }
   if (heroElements.trailer) {
@@ -95,6 +99,9 @@ function createMediaCard(item) {
   link.className = 'media-card';
   link.href = detailUrl(item.id);
   link.innerHTML = `
+  const card = document.createElement('article');
+  card.className = 'media-card';
+  card.innerHTML = `
     <div class="media-card__poster">
       <img src="${item.poster}" alt="${item.title}" loading="lazy" />
     </div>
@@ -113,6 +120,7 @@ function createMediaCard(item) {
     </div>
   `;
   return link;
+  return card;
 }
 
 function createTopEntry(item) {
@@ -131,6 +139,21 @@ function createTopEntry(item) {
     </div>
   `;
   li.appendChild(link);
+  const img = document.createElement('img');
+  img.src = item.backdrop || item.poster;
+  img.alt = item.title;
+  img.loading = 'lazy';
+  li.appendChild(img);
+  const body = document.createElement('div');
+  body.className = 'top-grid__body';
+  body.innerHTML = `
+    <h3 class="top-grid__title">${item.title}</h3>
+    <div class="top-grid__meta">
+      <span>⭐ ${item.rating ? item.rating.toFixed(1) : '–'}</span>
+      <span>${item.year ?? ''}</span>
+    </div>
+  `;
+  li.appendChild(body);
   return li;
 }
 
